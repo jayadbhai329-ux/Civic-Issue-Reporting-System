@@ -1,0 +1,47 @@
+{
+  "files_checked": [
+    "garbage_coco.json",
+    "pothole_coco.json",
+    "road_coco.json",
+    "new_images_coco.json"
+  ],
+  "target_classes": [
+    "crack",
+    "blurline",
+    "garbage",
+    "pothole",
+    "manhole"
+  ],
+  "class_mapping": {
+    "crack": 0,
+    "blurline": 1,
+    "garbage": 2,
+    "pothole": 3,
+    "manhole": 4
+  },
+  "total_referenced_images": 10558,
+  "total_civic_annotations": 17346,
+  "class_annotation_counts": {
+    "garbage": 831,
+    "pothole": 677,
+    "crack": 10876,
+    "blurline": 4543,
+    "manhole": 419
+  },
+  "available_images_count": 0,
+  "missing_images_count": 10558,
+  "missing_image_samples": [
+    "garbage/77770000001.jpg",
+    "garbage/77770000002.jpg",
+    "garbage/77770000003.jpg",
+    "garbage/77770000004.jpg",
+    "garbage/77770000005.jpg",
+    "garbage/77770000006.jpg",
+    "garbage/77770000007.jpg",
+    "garbage/77770000008.jpg",
+    "garbage/77770000009.jpg",
+    "garbage/77770000010.jpg"
+  ],
+  "invalid_bboxes_count": 0,
+  "status": "IMAGES_MISSING_STOPPED"
+}

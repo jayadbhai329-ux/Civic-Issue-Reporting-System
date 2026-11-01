@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Review Issue #{{ issue.id }} | Admin{% endblock %}
+{% block content %}
+<div class="page-container narrow">
+  <a class="back-link" href="{{ url_for('admin_dashboard') }}">← Back to Admin Dashboard</a>
+  <div class="admin-review">
+    <div class="detail-top">
+      <div><span class="issue-id">REPORT #{{ issue.id }}</span><h1>{{ issue.title }}</h1></div>
+      <span class="status {{ issue.status|lower|replace(' ', '-') }}">{{ issue.status }}</span>
+    </div>
+
+    <div class="citizen-box">
+      <b>Reported by:</b> {{ issue.citizen_name }} &nbsp; | &nbsp;
+      <b>Email:</b> {{ issue.citizen_email }}
+      {% if issue.citizen_phone %}&nbsp; | &nbsp;<b>Phone:</b> {{ issue.citizen_phone }}{% endif %}
+    </div>
+
+    <div class="detail-grid">
+      <div><p class="label">Category</p><p>{{ issue.category }}</p></div>
+      <div><p class="label">Location</p><p>📍 {{ issue.location }}</p></div>
+      <div><p class="label">Reported on</p><p>{{ issue.created_at }}</p></div>
+    </div>
+
+    <div class="detail-section"><p class="label">Description</p><p class="description">{{ issue.description }}</p></div>
+
+    {% if issue.image %}
+    <div class="detail-section">
+      <p class="label">Photo evidence</p>
+      <div style="position: relative; display: inline-block; max-width: 100%;">
+        <img class="issue-large-image" src="{{ url_for('uploaded_file', filename=issue.image) }}" alt="Issue evidence" style="display:block; border-radius:10px; max-width:100%;">
+        {% if ai_data and ai_data.boxes %}
+        <div id="adminBboxOverlay" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; border-radius:10px; overflow:hidden;">
+          {% for box in ai_data.boxes %}
+            {% if box.box_norm and box.box_norm|length == 4 %}
+              {% set x1 = box.box_norm[0] * 100 %}
+              {% set y1 = box.box_norm[1] * 100 %}
+              {% set w = (box.box_norm[2] - box.box_norm[0]) * 100 %}
+              {% set h = (box.box_norm[3] - box.box_norm[1]) * 100 %}
+              <div class="ai-bbox {{ box.class }}" style="left: {{ '%.2f'|format(x1) }}%; top: {{ '%.2f'|format(y1) }}%; width: {{ '%.2f'|format(w) }}%; height: {{ '%.2f'|format(h) }}%;">
+                <span class="ai-bbox-label">{{ box.label or box.class }} ({{ (box.confidence * 100)|round|int }}%)</span>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      {% set cur_decision = (ai_data.decision if ai_data else (issue.review_decision or issue.validation_status or 'ACCEPT'))|upper %}
+      <div class="ai-result-card {{ 'ai-verified' if cur_decision == 'ACCEPT' else ('ai-review' if cur_decision == 'MANUAL_REVIEW' else 'ai-flagged') }}" style="margin-top: 14px;">
+        <div class="ai-result-header">
+          <div class="ai-badge-title">
+            <span class="ai-badge-emoji">{{ '✅' if cur_decision == 'ACCEPT' else ('⚠️' if cur_decision == 'MANUAL_REVIEW' else '❌') }}</span>
+            <strong>
+              {% if cur_decision == 'ACCEPT' %}
+                AI Verified: Genuine Civic Issue
+              {% elif cur_decision == 'MANUAL_REVIEW' %}
+                Flagged for Manual Review
+              {% else %}
+                Validation Failed: Rejected
+              {% endif %}
+            </strong>
+          </div>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="ai-decision-pill {{ 'accept' if cur_decision == 'ACCEPT' else ('manual-review' if cur_decision == 'MANUAL_REVIEW' else 'reject') }}">{{ cur_decision }}</span>
+            <span class="ai-confidence-pill">{{ (ai_data.ai_confidence if ai_data else (issue.ai_confidence or 85.0))|round|int }}% Confidence</span>
+          </div>
+        </div>
+
+        <p class="ai-reason-text">{{ (ai_data.explanation if ai_data else (issue.ai_explanation or issue.admin_note)) }}</p>
+
+        <div class="ai-tags-row">
+          <span class="ai-tag">🏷️ Predicted: {{ (ai_data.predicted_category if ai_data else (issue.predicted_category or issue.category)) }}</span>
+          {% if ai_data %}
+            {% if ai_data.blur_score %}
+              <span class="ai-tag">{{ '⚠️ Blurry' if ai_data.is_blurry else '🔍 Sharpness: ' ~ ai_data.blur_score }}</span>
+            {% endif %}
+            <span class="ai-tag">{{ '⚠️ Potential Duplicate' if ai_data.is_duplicate else '✓ Unique Photo' }}</span>
+            <span class="ai-tag">{{ '🤖 Synthetic/AI' if ai_data.is_ai_generated else '📷 Real Camera Photo' }}</span>
+            {% if ai_data.is_mismatch %}
+              <span class="ai-tag" style="background:#FEE2E2; color:#991B1B;">⚠️ Text-Image Mismatch</span>
+            {% endif %}
+          {% elif issue.image_phash %}
+            <span class="ai-tag">🔑 pHash: {{ issue.image_phash[:12] }}...</span>
+          {% endif %}
+          <span class="ai-tag ai-engine">🤖 Multi-Modal AI Engine</span>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <hr>
+
+    <form method="POST" class="report-form">
+      <h2>Update Report</h2>
+      <label>Status</label>
+      <select name="status" required>
+        {% for s in ["Pending","In Progress","Resolved","Rejected"] %}
+          <option value="{{ s }}" {% if issue.status == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+      <label>Admin note</label>
+      <textarea name="admin_note" rows="4" placeholder="Add action taken, reason, or update for the citizen...">{{ issue.admin_note or "" }}</textarea>
+      <button class="btn primary full" type="submit">Save Status & Note</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

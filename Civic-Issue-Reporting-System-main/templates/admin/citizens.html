@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Citizens | Admin{% endblock %}
+{% block content %}
+<div class="page-container">
+  <div class="dashboard-head">
+    <div><p class="eyebrow">ADMIN PORTAL</p><h1>Registered Citizens</h1><p class="muted">View users who have registered on the platform.</p></div>
+  </div>
+  <div class="table-card">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Reports</th><th>Joined</th></tr></thead>
+        <tbody>
+        {% for citizen in citizens %}
+          <tr>
+            <td>#{{ citizen.id }}</td>
+            <td><b>{{ citizen.name }}</b></td>
+            <td>{{ citizen.email }}</td>
+            <td>{{ citizen.phone or "—" }}</td>
+            <td>{{ citizen.issue_count }}</td>
+            <td>{{ citizen.created_at }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{
+  "model_name": "LogisticRegression (Balanced)",
+  "classes": [
+    "Drainage",
+    "Garbage",
+    "Graffiti",
+    "Illegal-Dumping",
+    "Illegal_Parking",
+    "Noise",
+    "Other",
+    "Pothole",
+    "Streetlight",
+    "Water_Leakage"
+  ],
+  "test_accuracy": 0.9818,
+  "test_macro_f1": 0.966,
+  "test_weighted_f1": 0.9816,
+  "num_classes": 10,
+  "training_samples": 770,
+  "test_samples": 165,
+  "feature_column": "issue_description",
+  "target_column": "issue_type"
+}

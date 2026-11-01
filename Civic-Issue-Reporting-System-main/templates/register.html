@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Register | CivicConnect{% endblock %}
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card wide">
+    <div class="auth-logo">C</div>
+    <h1 data-i18n="register_title">Create citizen account</h1>
+    <p class="muted" data-i18n="register_subtitle">Register to report and track local civic issues.</p>
+    <form method="POST">
+      <div class="form-grid">
+        <div>
+          <label data-i18n="name_label">Full name *</label>
+          <input type="text" name="name" value="{{ name or '' }}" placeholder="Your full name" data-i18n-placeholder="name_placeholder" required>
+        </div>
+        <div>
+          <label data-i18n="phone_label">Phone number</label>
+          <input type="tel" name="phone" value="{{ phone or '' }}" placeholder="10-digit mobile number" data-i18n-placeholder="phone_placeholder">
+        </div>
+      </div>
+      <label data-i18n="email_label">Email address *</label>
+      <input type="email" name="email" value="{{ email or '' }}" placeholder="you@example.com" data-i18n-placeholder="email_placeholder" required>
+      <div class="form-grid">
+        <div>
+          <label data-i18n="password_label">Password *</label>
+          <input type="password" name="password" placeholder="Minimum 6 characters" data-i18n-placeholder="password_placeholder" required>
+        </div>
+        <div>
+          <label data-i18n="confirm_password_label">Confirm password *</label>
+          <input type="password" name="confirm_password" placeholder="Re-enter password" data-i18n-placeholder="confirm_password_placeholder" required>
+        </div>
+      </div>
+
+      <!-- CAPTCHA Verification -->
+      <div class="captcha-group">
+        <label data-i18n="captcha_label">Security Verification (CAPTCHA) *</label>
+        <div class="captcha-box">
+          <div class="captcha-img-wrap">
+            <img id="registerCaptchaImg" src="{{ url_for('captcha_image', form_type='register') }}" alt="CAPTCHA Code" height="46">
+            <button type="button" class="captcha-refresh-btn" onclick="refreshCaptcha('register')" data-i18n-title="captcha_refresh_title" title="Click to change CAPTCHA">🔄</button>
+          </div>
+          <input type="text" name="captcha" class="captcha-input" placeholder="Enter characters above" data-i18n-placeholder="captcha_placeholder" maxlength="6" autocomplete="off" required>
+        </div>
+      </div>
+
+      <button class="btn primary full" type="submit" data-i18n="create_account_btn">Create Account</button>
+    </form>
+    <p class="auth-bottom"><span data-i18n="already_registered">Already registered?</span> <a href="{{ url_for('login') }}" data-i18n="nav_login">Login</a></p>
+  </div>
+</div>
+{% endblock %}

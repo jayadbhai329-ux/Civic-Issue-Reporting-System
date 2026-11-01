@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard | CivicConnect{% endblock %}
+{% block content %}
+<div class="page-container">
+  <div class="dashboard-head">
+    <div>
+      <p class="eyebrow">ADMIN PORTAL</p>
+      <h1>Civic Issues Dashboard</h1>
+      <p class="muted">Review reports submitted by citizens.</p>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card"><span>Total Reports</span><strong>{{ stats.total }}</strong><i>📋</i></div>
+    <div class="stat-card"><span>Pending</span><strong>{{ stats.pending }}</strong><i>⏳</i></div>
+    <div class="stat-card"><span>In Progress</span><strong>{{ stats.progress }}</strong><i>🔧</i></div>
+    <div class="stat-card"><span>Resolved</span><strong>{{ stats.resolved }}</strong><i>✅</i></div>
+    <div class="stat-card" style="border-color:#FCD34D; background:#FFFDF7;"><span>Manual Review Queue</span><strong style="color:#B45309;">{{ stats.manual_review }}</strong><i>⚠️</i></div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-head"><h2>Recent Reports</h2></div>
+    {% if issues %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Citizen</th><th>Issue</th><th>Category</th><th>Location</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+        {% for issue in issues %}
+          <tr>
+            <td>#{{ issue.id }}</td>
+            <td><b>{{ issue.citizen_name }}</b><small>{{ issue.citizen_email }}</small></td>
+            <td>
+              {{ issue.title }}
+              {% set dec = (issue.review_decision or issue.validation_status or '')|upper %}
+              {% if dec == 'ACCEPT' or (issue.admin_note and ('[ACCEPT' in issue.admin_note or '[AI Verified' in issue.admin_note)) %}
+                <span class="ai-mini-badge accept" title="AI Verified Civic Issue">AI Verified</span>
+              {% elif dec == 'MANUAL_REVIEW' or (issue.admin_note and '[MANUAL_REVIEW' in issue.admin_note) %}
+                <span class="ai-mini-badge manual-review" title="Flagged for Manual Review">Manual Review</span>
+              {% elif dec == 'REJECT' or (issue.admin_note and ('[REJECT' in issue.admin_note or '[AI Flagged' in issue.admin_note)) %}
+                <span class="ai-mini-badge reject" title="AI Flagged Non-Civic Image">AI Flagged</span>
+              {% endif %}
+            </td>
+            <td>{{ issue.category }}</td>
+            <td>{{ issue.location }}</td>
+            <td><span class="status {{ issue.status|lower|replace(' ', '-') }}">{{ issue.status }}</span></td>
+            <td><a class="small-btn" href="{{ url_for('admin_issue', issue_id=issue.id) }}">Review</a></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <div class="empty small-empty"><h3>No reports submitted yet.</h3></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

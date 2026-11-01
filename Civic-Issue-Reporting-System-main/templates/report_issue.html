@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Report Issue | CivicReport{% endblock %}
+{% block content %}
+<div class="page-container narrow">
+  <div class="form-header">
+    <p class="eyebrow" data-i18n="dashboard_eyebrow">CITIZEN REPORT</p>
+    <h1 data-i18n="report_page_title">Report a civic issue</h1>
+    <p class="muted" data-i18n="report_page_subtitle">Provide accurate information so the issue can be reviewed quickly.</p>
+  </div>
+
+  <form class="report-form" method="POST" enctype="multipart/form-data">
+    <label data-i18n="issue_title_label">Issue title *</label>
+    <input type="text" name="title" value="{{ title or '' }}" placeholder="Example: Streetlight not working near main road" data-i18n-placeholder="issue_title_placeholder" required>
+
+    <label data-i18n="category_label">Category *</label>
+    <select name="category" required>
+      <option value="" data-i18n="category_select">Select issue category</option>
+      <option value="Road & Potholes" {% if category == "Road & Potholes" %}selected{% endif %}>Road & Potholes</option>
+      <option value="Streetlight" {% if category == "Streetlight" %}selected{% endif %}>Streetlight</option>
+      <option value="Garbage & Waste" {% if category == "Garbage & Waste" %}selected{% endif %}>Garbage & Waste</option>
+      <option value="Water Supply" {% if category == "Water Supply" %}selected{% endif %}>Water Supply</option>
+      <option value="Drainage & Sewage" {% if category == "Drainage & Sewage" %}selected{% endif %}>Drainage & Sewage</option>
+      <option value="Public Toilet" {% if category == "Public Toilet" %}selected{% endif %}>Public Toilet</option>
+      <option value="Public Park" {% if category == "Public Park" %}selected{% endif %}>Public Park</option>
+      <option value="Traffic & Parking" {% if category == "Traffic & Parking" %}selected{% endif %}>Traffic & Parking</option>
+      <option value="Other" {% if category == "Other" %}selected{% endif %}>Other</option>
+    </select>
+
+    <label data-i18n="location_label">Location *</label>
+    <input type="text" name="location" value="{{ location or '' }}" placeholder="Area, street, landmark, city" data-i18n-placeholder="location_placeholder" required>
+
+    <label data-i18n="desc_label">Problem description *</label>
+    <textarea name="description" rows="6" placeholder="Explain what happened, where it is, and how it affects people..." data-i18n-placeholder="desc_placeholder" required>{{ description or '' }}</textarea>
+
+    <label data-i18n="photo_label">Upload photo</label>
+    <div class="upload-box">
+      <input id="imageInput" type="file" name="image" accept=".jpg,.jpeg,.png,.webp">
+      <span data-i18n="photo_choose">📷 Choose an image (max 5 MB)</span>
+      <div id="imagePreviewContainer" style="position: relative; display: inline-block; width: 100%;">
+        <img id="imagePreview" class="preview" alt="Preview" style="display:none; width:100%; border-radius:10px;">
+        <div id="bboxOverlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></div>
+      </div>
+    </div>
+
+    <!-- AI Multi-Modal Validation Panel -->
+    <div id="aiDetectorContainer" class="ai-detector-box" style="display: none;">
+      <div id="aiScanningState" class="ai-scanning-state">
+        <div class="ai-spinner"></div>
+        <div class="ai-scan-info">
+          <strong>AI Triage System Analyzing Submission...</strong>
+          <span>Evaluating photo authenticity, defect localization, perceptual hashing & complaint consistency</span>
+        </div>
+      </div>
+
+      <div id="aiResultCard" class="ai-result-card" style="display: none;">
+        <div class="ai-result-header">
+          <div class="ai-badge-title">
+            <span id="aiBadgeIcon" class="ai-badge-emoji">✅</span>
+            <strong id="aiBadgeText">Status: ACCEPT</strong>
+          </div>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span id="aiDecisionPill" class="ai-decision-pill accept">ACCEPT</span>
+            <span id="aiBadgeConfidence" class="ai-confidence-pill">98% Confidence</span>
+          </div>
+        </div>
+
+        <div id="aiCategoryRow" style="margin: 6px 0; font-size: 13px;">
+          <b>Detected Issue Category:</b> <span id="aiDetectedCategoryText" style="color:var(--primary); font-weight:700;">Road & Potholes</span>
+          <span id="aiTextMatchTag" style="display:none; margin-left:8px; font-size:11px; background:#E0F2FE; color:#0369A1; padding:2px 8px; border-radius:4px;">Text Match: Confirmed</span>
+        </div>
+
+        <p id="aiBadgeReason" class="ai-reason-text"></p>
+        <div id="aiBadgeTags" class="ai-tags-row"></div>
+
+        <div id="aiRetrySection" style="margin-top: 12px; display: flex; justify-content: flex-end;">
+          <button id="aiRetryBtn" type="button" class="btn secondary" style="padding: 6px 14px; font-size: 12px;">🔄 Choose Different Photo</button>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="notice" data-i18n="notice_pending">Your report will initially be marked <b>Pending</b>. The admin can update its status after review.</div>
+
+    <button class="btn primary full" type="submit" data-i18n="submit_report_btn">Submit Civic Report</button>
+  </form>
+</div>
+{% endblock %}

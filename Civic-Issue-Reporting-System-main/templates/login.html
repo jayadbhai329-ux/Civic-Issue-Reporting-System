@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Login | CivicReport{% endblock %}
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <svg width="20" height="24" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17 0C7.61 0 0 7.61 0 17C0 27.6 14.8 40.8 15.4 41.3C15.9 41.7 16.5 42 17 42C17.5 42 18.1 41.7 18.6 41.3C19.2 40.8 34 27.6 34 17C34 7.61 26.39 0 17 0Z" fill="white"/>
+        <circle cx="17" cy="16" r="6" fill="#1677F2"/>
+      </svg>
+    </div>
+    <h1 data-i18n="login_title">Welcome back</h1>
+    <p class="muted" data-i18n="login_subtitle">Login to manage your civic reports.</p>
+    <form method="POST">
+      {% if request.args.get('next') %}
+        <input type="hidden" name="next" value="{{ request.args.get('next') }}">
+      {% endif %}
+      <label data-i18n="email_label">Email address</label>
+      <input type="email" name="email" value="{{ email or '' }}" placeholder="you@example.com" data-i18n-placeholder="email_placeholder" required>
+      <label data-i18n="password_label">Password</label>
+      <input type="password" name="password" placeholder="Enter password" data-i18n-placeholder="password_placeholder" required>
+
+      <!-- CAPTCHA Verification -->
+      <div class="captcha-group">
+        <label data-i18n="captcha_label">Security Verification (CAPTCHA) *</label>
+        <div class="captcha-box">
+          <div class="captcha-img-wrap">
+            <img id="loginCaptchaImg" src="{{ url_for('captcha_image', form_type='login') }}" alt="CAPTCHA Code" height="46">
+            <button type="button" class="captcha-refresh-btn" onclick="refreshCaptcha('login')" data-i18n-title="captcha_refresh_title" title="Click to change CAPTCHA">🔄</button>
+          </div>
+          <input type="text" name="captcha" class="captcha-input" placeholder="Enter characters above" data-i18n-placeholder="captcha_placeholder" maxlength="6" autocomplete="off" required>
+        </div>
+      </div>
+
+      <button class="btn primary full" type="submit" data-i18n="login_btn">Login</button>
+    </form>
+    <p class="auth-bottom"><span data-i18n="no_account">Don't have an account?</span> <a href="{{ url_for('register') }}" data-i18n="create_account_link">Create account</a></p>
+  </div>
+</div>
+{% endblock %}

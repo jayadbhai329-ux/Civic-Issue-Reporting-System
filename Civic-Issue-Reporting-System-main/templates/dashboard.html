@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}My Dashboard | CivicConnect{% endblock %}
+{% block content %}
+<div class="page-container">
+  <div class="dashboard-head">
+    <div>
+      <p class="eyebrow" data-i18n="dashboard_eyebrow">CITIZEN PORTAL</p>
+      <h1 data-i18n="dashboard_heading">My Civic Reports</h1>
+      <p class="muted" data-i18n="dashboard_desc">Track the issues you have reported.</p>
+    </div>
+    <a class="btn primary" href="{{ url_for('report_issue') }}" data-i18n="btn_report_new">+ Report New Issue</a>
+  </div>
+
+  {% if issues %}
+  <div class="issue-list">
+    {% for issue in issues %}
+    <a class="issue-card" href="{{ url_for('issue_detail', issue_id=issue.id) }}">
+      <div class="issue-thumb">
+        {% if issue.image %}
+          <img src="{{ url_for('uploaded_file', filename=issue.image) }}" alt="Issue photo">
+        {% else %}
+          <span>📷</span>
+        {% endif %}
+      </div>
+      <div class="issue-main">
+        <div class="issue-top">
+          <span class="issue-id">#{{ issue.id }}</span>
+          <div style="display:flex;align-items:center;gap:6px;">
+            {% set dec = (issue.review_decision or issue.validation_status or '')|upper %}
+            {% if dec == 'ACCEPT' or (issue.admin_note and ('[ACCEPT' in issue.admin_note or '[AI Verified' in issue.admin_note)) %}
+              <span class="ai-mini-badge accept" title="AI Verified Civic Issue">AI Verified</span>
+            {% elif dec == 'MANUAL_REVIEW' or (issue.admin_note and '[MANUAL_REVIEW' in issue.admin_note) %}
+              <span class="ai-mini-badge manual-review" title="Flagged for Manual Review">Manual Review</span>
+            {% elif dec == 'REJECT' or (issue.admin_note and ('[REJECT' in issue.admin_note or '[AI Flagged' in issue.admin_note)) %}
+              <span class="ai-mini-badge reject" title="AI Flagged Non-Civic Image">AI Flagged</span>
+            {% endif %}
+            <span class="status {{ issue.status|lower|replace(' ', '-') }}">{{ issue.status }}</span>
+          </div>
+        </div>
+        <h3>{{ issue.title }}</h3>
+        <p>{{ issue.description|truncate(130) }}</p>
+        <small>📍 {{ issue.location }} &nbsp; • &nbsp; {{ issue.created_at }}</small>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty">
+    <div class="empty-icon">📋</div>
+    <h2>No reports yet</h2>
+    <p>Have you noticed a civic problem? Report it here.</p>
+    <a class="btn primary" href="{{ url_for('report_issue') }}">Report First Issue</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

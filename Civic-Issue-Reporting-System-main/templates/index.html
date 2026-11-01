@@ -1,0 +1,476 @@
+{% extends "base.html" %}
+{% block title %}CivicReport • Report Civic Issues Easy & Fast{% endblock %}
+
+{% block navbar %}
+<header class="cr-navbar">
+    <div class="cr-nav-inner">
+        <!-- Logo / Branding -->
+        <a class="cr-brand" href="{{ url_for('index') }}">
+            <div class="cr-logo-icon">
+                <svg width="28" height="34" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17 0C7.61 0 0 7.61 0 17C0 27.6 14.8 40.8 15.4 41.3C15.9 41.7 16.5 42 17 42C17.5 42 18.1 41.7 18.6 41.3C19.2 40.8 34 27.6 34 17C34 7.61 26.39 0 17 0Z" fill="#1677F2"/>
+                    <circle cx="17" cy="16" r="6" fill="#FFFFFF"/>
+                </svg>
+            </div>
+            <div class="cr-brand-text">
+                <span class="cr-brand-name">CivicReport</span>
+                <span class="cr-brand-tagline">Report • Track • Improve</span>
+            </div>
+        </a>
+
+        <!-- Center Nav Links -->
+        <nav class="cr-nav-center" id="crNavMenu">
+            <ul class="cr-nav-links">
+                <li class="cr-nav-item active">
+                    <a href="{{ url_for('index') }}" data-i18n="nav_home">Home</a>
+                    <span class="cr-active-indicator"></span>
+                </li>
+                <li class="cr-nav-item"><a href="#how-it-works" data-i18n="nav_about">About</a></li>
+                <li class="cr-nav-item"><a href="#features" data-i18n="nav_features">Features</a></li>
+                <li class="cr-nav-item"><a href="#contact" data-i18n="nav_contact">Contact</a></li>
+            </ul>
+
+            <!-- Mobile Auth inside menu -->
+            <div class="cr-mobile-auth">
+                <!-- Mobile Language Selector -->
+                <div class="lang-switch-dropdown" style="margin-bottom: 8px;">
+                    <button type="button" class="lang-btn" aria-expanded="false" title="Change Language">
+                        <span class="lang-globe">🌐</span>
+                        <span class="currentLangText">English</span>
+                        <span class="lang-arrow">▾</span>
+                    </button>
+                    <div class="lang-menu">
+                        <button type="button" class="lang-option active" data-lang="en">
+                            <span class="lang-flag">🇬🇧</span>
+                            <span>English</span>
+                        </button>
+                        <button type="button" class="lang-option" data-lang="hi">
+                            <span class="lang-flag">🇮🇳</span>
+                            <span>हिन्दी (Hindi)</span>
+                        </button>
+                        <button type="button" class="lang-option" data-lang="mr">
+                            <span class="lang-flag">🇮🇳</span>
+                            <span>मराठी (Marathi)</span>
+                        </button>
+                    </div>
+                </div>
+
+                {% if session.get('user_id') %}
+                    {% if session.get('role') == 'admin' %}
+                        <a class="cr-btn-pill cr-btn-outline" href="{{ url_for('admin_dashboard') }}" data-i18n="nav_admin_dashboard">Admin Dashboard</a>
+                        <a class="cr-btn-pill cr-btn-solid" href="{{ url_for('logout') }}" data-i18n="nav_logout">Logout</a>
+                    {% else %}
+                        <a class="cr-btn-pill cr-btn-outline" href="{{ url_for('dashboard') }}" data-i18n="nav_dashboard">Dashboard</a>
+                        <a class="cr-btn-pill cr-btn-solid" href="{{ url_for('report_issue') }}" data-i18n="nav_report_issue">Report Issue</a>
+                        <a class="cr-btn-pill cr-btn-outline" href="{{ url_for('logout') }}" data-i18n="nav_logout">Logout</a>
+                    {% endif %}
+                {% else %}
+                    <a class="cr-btn-pill cr-btn-outline" href="{{ url_for('login') }}" data-i18n="nav_login">Login</a>
+                    <a class="cr-btn-pill cr-btn-solid" href="{{ url_for('register') }}" data-i18n="nav_register">Register</a>
+                {% endif %}
+            </div>
+        </nav>
+
+        <!-- Right Action Buttons (Desktop) -->
+        <div class="cr-nav-actions">
+            <!-- Desktop Language Switcher -->
+            <div class="lang-switch-dropdown">
+                <button type="button" class="lang-btn" aria-expanded="false" title="Change Language / भाषा बदलें / भाषा बदला">
+                    <span class="lang-globe">🌐</span>
+                    <span class="currentLangText">English</span>
+                    <span class="lang-arrow">▾</span>
+                </button>
+                <div class="lang-menu">
+                    <button type="button" class="lang-option active" data-lang="en">
+                        <span class="lang-flag">🇬🇧</span>
+                        <span>English</span>
+                    </button>
+                    <button type="button" class="lang-option" data-lang="hi">
+                        <span class="lang-flag">🇮🇳</span>
+                        <span>हिन्दी (Hindi)</span>
+                    </button>
+                    <button type="button" class="lang-option" data-lang="mr">
+                        <span class="lang-flag">🇮🇳</span>
+                        <span>मराठी (Marathi)</span>
+                    </button>
+                </div>
+            </div>
+
+            {% if session.get('user_id') %}
+                {% if session.get('role') == 'admin' %}
+                    <a class="cr-btn-pill cr-btn-outline" href="{{ url_for('admin_dashboard') }}" data-i18n="nav_admin_dashboard">Admin Dashboard</a>
+                    <a class="cr-btn-pill cr-btn-solid" href="{{ url_for('logout') }}" data-i18n="nav_logout">Logout</a>
+                {% else %}
+                    <a class="cr-btn-pill cr-btn-outline" href="{{ url_for('dashboard') }}" data-i18n="nav_dashboard">Dashboard</a>
+                    <a class="cr-btn-pill cr-btn-solid" href="{{ url_for('report_issue') }}" data-i18n="nav_report_issue">Report Issue</a>
+                    <a class="cr-btn-pill cr-btn-outline" href="{{ url_for('logout') }}" data-i18n="nav_logout">Logout</a>
+                {% endif %}
+            {% else %}
+                <a class="cr-btn-pill cr-btn-outline" href="{{ url_for('login') }}" data-i18n="nav_login">Login</a>
+                <a class="cr-btn-pill cr-btn-solid" href="{{ url_for('register') }}" data-i18n="nav_register">Register</a>
+            {% endif %}
+        </div>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button class="cr-mobile-toggle" id="crMobileToggle" aria-label="Toggle navigation">
+            <span class="cr-bar"></span>
+            <span class="cr-bar"></span>
+            <span class="cr-bar"></span>
+        </button>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="cr-page-wrapper">
+
+    <!-- HERO SECTION -->
+    <section class="cr-hero">
+        <div class="cr-hero-container">
+            <div class="cr-hero-grid">
+                
+                <!-- Left Hero Column -->
+                <div class="cr-hero-left">
+                    <div class="cr-hero-badge">
+                        <span class="cr-badge-dot"></span>
+                        <span data-i18n="hero_badge">⚡ AI-Powered Civic Complaint System</span>
+                    </div>
+
+                    <h1 class="cr-hero-heading">
+                        <span class="cr-heading-navy" data-i18n="hero_heading">Report Civic Issues Easy &amp; Fast</span>
+                    </h1>
+
+                    <p class="cr-hero-desc" data-i18n="hero_desc">
+                        Connect with local municipal authorities to fix potholes, streetlight outages, garbage accumulation, and water leaks in your neighborhood.
+                    </p>
+
+                    <div class="cr-hero-actions">
+                        <a class="cr-hero-btn-primary" href="{{ url_for('report_issue') if session.get('user_id') else url_for('register') }}">
+                            <svg class="cr-btn-svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                            </svg>
+                            <span data-i18n="hero_btn_report">Report an Issue</span>
+                        </a>
+
+                        <a class="cr-hero-btn-secondary" href="#how-it-works">
+                            <span data-i18n="hero_btn_works">See How It Works</span>
+                            <svg class="cr-btn-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Hero Column (City Illustration & Floating Markers) -->
+                <div class="cr-hero-right">
+                    <div class="cr-visual-wrapper">
+                        <!-- Background Cloud Accents -->
+                        <div class="cr-cloud cr-cloud-tl"></div>
+                        <div class="cr-cloud cr-cloud-br"></div>
+                        
+                        <!-- Main 3D Floating Smart City Island & Phone -->
+                        <div class="cr-visual-box">
+                            <img src="{{ url_for('static', filename='hero-city.png') }}"
+                                 alt="Smart City 3D Civic Reporting Illustration"
+                                 class="cr-city-image">
+
+                            <!-- Interactive Floating Issue Cards -->
+                            <!-- 1. Garbage / Not Collected -->
+                            <a class="cr-card-hotspot cr-card-garbage"
+                               href="{{ url_for('report_issue', category='Garbage & Waste') }}"
+                               aria-label="Report Garbage Not Collected issue (Garbage &amp; Waste)"
+                               title="Garbage: Not Collected - Click to Report">
+                               <span class="cr-sr-only">Report Garbage Not Collected</span>
+                               <span class="cr-card-tooltip">Report Garbage &amp; Waste &rarr;</span>
+                            </a>
+
+                            <!-- 2. Street Light / Not Working -->
+                            <a class="cr-card-hotspot cr-card-streetlight"
+                               href="{{ url_for('report_issue', category='Streetlight') }}"
+                               aria-label="Report Street Light Not Working issue (Streetlight)"
+                               title="Street Light: Not Working - Click to Report">
+                               <span class="cr-sr-only">Report Street Light Not Working</span>
+                               <span class="cr-card-tooltip">Report Streetlight &rarr;</span>
+                            </a>
+
+                            <!-- 3. Road / Damaged -->
+                            <a class="cr-card-hotspot cr-card-road"
+                               href="{{ url_for('report_issue', category='Road & Potholes') }}"
+                               aria-label="Report a Damaged Road issue (Road &amp; Potholes)"
+                               title="Road: Damaged - Click to Report">
+                               <span class="cr-sr-only">Report a damaged road</span>
+                               <span class="cr-card-tooltip">Report Road &amp; Potholes &rarr;</span>
+                            </a>
+
+                            <!-- 4. Water / Leakage -->
+                            <a class="cr-card-hotspot cr-card-water"
+                               href="{{ url_for('report_issue', category='Water Supply') }}"
+                               aria-label="Report Water Leakage issue (Water Supply)"
+                               title="Water: Leakage - Click to Report">
+                               <span class="cr-sr-only">Report Water Leakage</span>
+                               <span class="cr-card-tooltip">Report Water Supply &rarr;</span>
+                            </a>
+
+                            <!-- 5. Smartphone Report Issue Button on Map -->
+                            <a class="cr-card-hotspot cr-phone-report-btn"
+                               href="{{ url_for('report_issue') }}"
+                               aria-label="Report an issue on mobile map"
+                               title="Report an Issue">
+                               <span class="cr-sr-only">Report an Issue</span>
+                            </a>
+                        </div>
+
+                        <!-- Mobile Quick-Select Category Strip -->
+                        <div class="cr-mobile-quick-issues">
+                            <span class="cr-mobile-quick-title">Quick Report by Category:</span>
+                            <div class="cr-mobile-quick-chips">
+                                <a class="cr-quick-chip cr-chip-road" href="{{ url_for('report_issue', category='Road & Potholes') }}">
+                                    <span class="cr-chip-dot"></span> Road Damaged
+                                </a>
+                                <a class="cr-quick-chip cr-chip-light" href="{{ url_for('report_issue', category='Streetlight') }}">
+                                    <span class="cr-chip-dot"></span> Street Light
+                                </a>
+                                <a class="cr-quick-chip cr-chip-garbage" href="{{ url_for('report_issue', category='Garbage & Waste') }}">
+                                    <span class="cr-chip-dot"></span> Garbage
+                                </a>
+                                <a class="cr-quick-chip cr-chip-water" href="{{ url_for('report_issue', category='Water Supply') }}">
+                                    <span class="cr-chip-dot"></span> Water Leakage
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- FEATURE STRIP (Bottom of Hero) -->
+        <div class="cr-features-wrap">
+            <div class="cr-features-container">
+                <div class="cr-features-grid">
+                    
+                    <!-- Feature 1 -->
+                    <div class="cr-feature-card">
+                        <div class="cr-feat-icon cr-feat-blue">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1677F2" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                        </div>
+                        <div class="cr-feat-info">
+                            <h3 class="cr-feat-title">Report Issue</h3>
+                            <p class="cr-feat-desc">Submit your civic complaint easily with photos and location.</p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 2 -->
+                    <div class="cr-feature-card">
+                        <div class="cr-feat-icon cr-feat-green">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                        </div>
+                        <div class="cr-feat-info">
+                            <h3 class="cr-feat-title">Track Location</h3>
+                            <p class="cr-feat-desc">See where your issue is reported and get real-time updates.</p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 3 -->
+                    <div class="cr-feature-card">
+                        <div class="cr-feat-icon cr-feat-purple">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                            </svg>
+                        </div>
+                        <div class="cr-feat-info">
+                            <h3 class="cr-feat-title">Get Updates</h3>
+                            <p class="cr-feat-desc">Receive notifications until your issue is resolved.</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Scroll Down Indicator -->
+                <a class="cr-scroll-indicator" href="#how-it-works">
+                    <div class="cr-mouse-pill">
+                        <span class="cr-mouse-dot"></span>
+                    </div>
+                    <span class="cr-scroll-label">Scroll Down</span>
+                    <svg class="cr-scroll-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: HOW IT WORKS -->
+    <section class="cr-section" id="how-it-works">
+        <div class="cr-section-header">
+            <span class="cr-eyebrow">HOW IT WORKS</span>
+            <h2 class="cr-section-heading">From Complaint to Resolution</h2>
+            <p class="cr-section-sub">A transparent 4-step workflow connecting citizens directly with administration.</p>
+        </div>
+
+        <div class="cr-steps-grid">
+            <div class="cr-step-card">
+                <div class="cr-step-num">01</div>
+                <h3>Create Account</h3>
+                <p>Register as a citizen with your email and phone number to track your submissions anytime.</p>
+            </div>
+
+            <div class="cr-step-card">
+                <div class="cr-step-num">02</div>
+                <h3>Report Issue</h3>
+                <p>Select category, describe the problem, pinpoint location, and attach clear photo evidence.</p>
+            </div>
+
+            <div class="cr-step-card">
+                <div class="cr-step-num">03</div>
+                <h3>Admin Review</h3>
+                <p>Municipal administrators review tickets, assign field teams, and update progress in real time.</p>
+            </div>
+
+            <div class="cr-step-card">
+                <div class="cr-step-num">04</div>
+                <h3>Track Resolution</h3>
+                <p>Monitor your issue through Pending, In Progress, to Resolved status with official notes.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: SUPPORTED CATEGORIES -->
+    <section class="cr-section cr-section-alt" id="features">
+        <div class="cr-section-header">
+            <span class="cr-eyebrow">SUPPORTED CATEGORIES</span>
+            <h2 class="cr-section-heading">Common Civic Issues We Help Address</h2>
+            <p class="cr-section-sub">Our platform supports multiple municipal problem types for rapid routing.</p>
+        </div>
+
+        <div class="cr-cat-grid">
+            <div class="cr-cat-card">
+                <div class="cr-cat-icon cr-cat-red">🛣️</div>
+                <div>
+                    <h4>Roads &amp; Potholes</h4>
+                    <p>Damaged tarmac, potholes, unpaved surfaces, or open trenches on roads.</p>
+                </div>
+            </div>
+
+            <div class="cr-cat-card">
+                <div class="cr-cat-icon cr-cat-yellow">💡</div>
+                <div>
+                    <h4>Streetlights</h4>
+                    <p>Faulty poles, flickering fixtures, or dark public walkways and avenues.</p>
+                </div>
+            </div>
+
+            <div class="cr-cat-card">
+                <div class="cr-cat-icon cr-cat-green">🗑️</div>
+                <div>
+                    <h4>Garbage Collection</h4>
+                    <p>Overflowing bins, uncollected trash heaps, and open waste dumping.</p>
+                </div>
+            </div>
+
+            <div class="cr-cat-card">
+                <div class="cr-cat-icon cr-cat-blue">💧</div>
+                <div>
+                    <h4>Water Supply &amp; Leakage</h4>
+                    <p>Broken pipelines, contaminated tap water, or low municipal water pressure.</p>
+                </div>
+            </div>
+
+            <div class="cr-cat-card">
+                <div class="cr-cat-icon cr-cat-cyan">🚰</div>
+                <div>
+                    <h4>Drainage &amp; Sewage</h4>
+                    <p>Clogged storm drains, sewage overflows, and rainwater waterlogging.</p>
+                </div>
+            </div>
+
+            <div class="cr-cat-card">
+                <div class="cr-cat-icon cr-cat-emerald">🌳</div>
+                <div>
+                    <h4>Public Parks &amp; Spaces</h4>
+                    <p>Broken park benches, fallen trees, damaged playground equipment.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: CALL TO ACTION / CONTACT -->
+    <section class="cr-section" id="contact">
+        <div class="cr-cta-banner">
+            <div class="cr-cta-content">
+                <h2>Have an issue in your neighborhood?</h2>
+                <p>Join citizens actively building a cleaner, safer, and smarter municipality.</p>
+                <div class="cr-cta-actions">
+                    <a class="cr-btn-pill cr-btn-solid cr-btn-lg" href="{{ url_for('report_issue') if session.get('user_id') else url_for('register') }}">
+                        Report an Issue Now
+                    </a>
+                    <a class="cr-btn-pill cr-btn-outline cr-btn-lg" href="{{ url_for('login') }}">
+                        Citizen Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+{% endblock %}
+
+{% block footer %}
+<footer class="cr-footer">
+    <div class="cr-footer-inner">
+        <div class="cr-footer-brand">
+            <div class="cr-brand">
+                <div class="cr-logo-icon">
+                    <svg width="24" height="30" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17 0C7.61 0 0 7.61 0 17C0 27.6 14.8 40.8 15.4 41.3C15.9 41.7 16.5 42 17 42C17.5 42 18.1 41.7 18.6 41.3C19.2 40.8 34 27.6 34 17C34 7.61 26.39 0 17 0Z" fill="#1677F2"/>
+                        <circle cx="17" cy="16" r="6" fill="#FFFFFF"/>
+                    </svg>
+                </div>
+                <div class="cr-brand-text">
+                    <span class="cr-brand-name">CivicReport</span>
+                    <span class="cr-brand-tagline">Report • Track • Improve</span>
+                </div>
+            </div>
+            <p class="cr-footer-desc">
+                An intelligent civic problem reporting and resolution platform for proactive citizens and responsive municipal teams.
+            </p>
+        </div>
+
+        <div class="cr-footer-links">
+            <div class="cr-f-col">
+                <h4>Navigation</h4>
+                <a href="{{ url_for('index') }}">Home</a>
+                <a href="#how-it-works">About</a>
+                <a href="#features">Features</a>
+                <a href="#contact">Contact</a>
+            </div>
+            <div class="cr-f-col">
+                <h4>Citizen Access</h4>
+                <a href="{{ url_for('login') }}">Citizen Login</a>
+                <a href="{{ url_for('register') }}">Register Account</a>
+                <a href="{{ url_for('report_issue') if session.get('user_id') else url_for('register') }}">Report Complaint</a>
+                <a href="{{ url_for('dashboard') if session.get('user_id') else url_for('login') }}">Track Status</a>
+            </div>
+            <div class="cr-f-col">
+                <h4>Helpline</h4>
+                <p class="cr-f-info"><strong>Emergency Control:</strong> 112</p>
+                <p class="cr-f-info"><strong>Civic Hotline:</strong> 1800-CIVIC-00</p>
+                <p class="cr-f-info"><strong>Email:</strong> support@civicreport.local</p>
+            </div>
+        </div>
+    </div>
+    <div class="cr-footer-bottom">
+        <p>© 2026 CivicReport • Civic Issues Reporting System. All rights reserved.</p>
+    </div>
+</footer>
+{% endblock %}
